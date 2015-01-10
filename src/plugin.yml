@@ -1,0 +1,9 @@
+name: HitboxBind
+version: 1.0.0
+main: cz.projectsurvive.limeth.hitboxbind.HitboxBind
+author: Limeth
+depend: [FramePicture-1.8]
+commands:
+    hitboxbind:
+        description: 'Admin commands for the HitboxBind plugin'
+        aliases: [hitbox, hbbind, hbb]

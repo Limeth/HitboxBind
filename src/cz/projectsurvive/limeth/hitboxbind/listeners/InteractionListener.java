@@ -1,5 +1,6 @@
 package cz.projectsurvive.limeth.hitboxbind.listeners;
 
+import com.google.common.base.Optional;
 import cz.projectsurvive.limeth.hitboxbind.HitboxBind;
 import cz.projectsurvive.limeth.hitboxbind.actions.FrameAction;
 import org.bukkit.entity.Entity;
@@ -23,13 +24,13 @@ public class InteractionListener implements Listener
 			return;
 
 		Player player = event.getPlayer();
-		FrameAction action = HitboxBind.removeFrameAction(player);
+		Optional<FrameAction> action = HitboxBind.removeFrameAction(player);
 
-		if(action == null)
+		if(!action.isPresent())
 			return;
 
 		ItemFrame itemFrame = (ItemFrame) entity;
 
-		action.onRightClick(player, itemFrame);
+		action.get().onRightClick(player, itemFrame);
 	}
 }

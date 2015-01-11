@@ -33,7 +33,7 @@ public class CreateAction implements FrameAction
 		HitboxFrame frame = HitboxFrame.construct(frameClass, id, media, itemFrame.getLocation(), itemFrame.getFacing());
 
 		frame.setEntity(itemFrame);
-		HitboxBind.addFrame(frame);
+		HitboxBind.registerFrame(frame);
 		manager.sendFrame(frame);
 		player.sendMessage(ChatColor.GREEN + "Item frame successfully edited.");
 	}

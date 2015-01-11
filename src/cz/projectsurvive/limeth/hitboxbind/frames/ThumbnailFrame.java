@@ -12,11 +12,11 @@ import java.net.URL;
 /**
  * @author Limeth
  */
-public class AvatarFrame extends ImageHitboxFrame
+public class ThumbnailFrame extends ImageHitboxFrame
 {
 	public static final ScaleMethod SCALE_METHOD = ScaleMethod.ZOOM;
 
-	public AvatarFrame(int id, Class<? extends HitboxFrame> frameClass, ReadOnlyBinding<HitboxMedia> liveStreamDataBinding, Location loc, BlockFace face)
+	public ThumbnailFrame(int id, Class<? extends HitboxFrame> frameClass, ReadOnlyBinding<HitboxMedia> liveStreamDataBinding, Location loc, BlockFace face)
 	{
 		super(id, frameClass, liveStreamDataBinding, loc, face);
 	}
@@ -24,7 +24,7 @@ public class AvatarFrame extends ImageHitboxFrame
 	@Override
 	public URL getImageURL()
 	{
-		return getMedia().getLogoSmall();
+		return getMedia().getThumbnailSmall();
 	}
 
 	@Override

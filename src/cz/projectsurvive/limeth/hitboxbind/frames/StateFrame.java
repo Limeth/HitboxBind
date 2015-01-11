@@ -45,9 +45,14 @@ public class StateFrame extends HitboxFrame
 		Rectangle2D textBounds = fontMetrics.getStringBounds(text, graphics);
 		int textX = (int) Math.round((MAP_SIZE - textBounds.getWidth()) / 2);
 		int textY = (int) Math.round((MAP_SIZE + textBounds.getHeight()) / 2);
+		String name = data.getDisplayName();
+		Rectangle2D nameBounds = fontMetrics.getStringBounds(name, graphics);
+		int nameX = (int) Math.round((MAP_SIZE - nameBounds.getWidth()) / 2);
+		int nameY = (int) Math.round((MAP_SIZE - nameBounds.getHeight()) / 2);
 
 		graphics.setColor(TEXT_COLOR);
 		graphics.drawString(text, textX, textY);
+		graphics.drawString(name, nameX, nameY);
 
 		return image;
 	}

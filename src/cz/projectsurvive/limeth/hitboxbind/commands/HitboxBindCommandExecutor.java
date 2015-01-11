@@ -1,5 +1,6 @@
 package cz.projectsurvive.limeth.hitboxbind.commands;
 
+import com.google.common.base.Optional;
 import cz.projectsurvive.limeth.hitboxbind.HitboxBind;
 import cz.projectsurvive.limeth.hitboxbind.Name;
 import cz.projectsurvive.limeth.hitboxbind.actions.CreateAction;
@@ -63,9 +64,9 @@ public class HitboxBindCommandExecutor implements CommandExecutor
 			}
 
 			String rawType = args[1];
-			Class<? extends HitboxFrame> frameClass = HitboxBind.getFrameType(new Name(rawType));
+			Optional<Class<? extends HitboxFrame>> frameClass = HitboxBind.getFrameType(new Name(rawType));
 
-			if(frameClass == null)
+			if(!frameClass.isPresent())
 			{
 				sender.sendMessage(ChatColor.RED + "Unknown map type '" + ChatColor.YELLOW + rawType + ChatColor.RED + "'.");
 				return true;
@@ -76,7 +77,7 @@ public class HitboxBindCommandExecutor implements CommandExecutor
 
 			String media = args[2];
 			Player player = (Player) sender;
-			FrameAction action = new CreateAction(media, frameClass);
+			FrameAction action = new CreateAction(media, frameClass.get());
 
 			HitboxBind.setFrameAction(player, action);
 			sender.sendMessage(ChatColor.GREEN + "Right-click an item frame to create a new map view.");

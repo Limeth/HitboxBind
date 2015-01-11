@@ -2,6 +2,7 @@ package cz.projectsurvive.limeth.hitboxbind.frames;
 
 import cz.projectsurvive.limeth.hitboxbind.HitboxFrameParseException;
 import cz.projectsurvive.limeth.hitboxbind.HitboxMedia;
+import cz.projectsurvive.limeth.hitboxbind.Name;
 import cz.projectsurvive.limeth.hitboxbind.util.ReadOnlyBinding;
 import de.howaner.FramePicture.util.Frame;
 import org.bukkit.Location;
@@ -36,7 +37,7 @@ public abstract class HitboxFrame extends Frame
 	}
 
 	@SuppressWarnings("unchecked")
-	public static HitboxFrame instanceOf(Frame frame, Function<String, ReadOnlyBinding<HitboxMedia>> mediaBindingSupplier)
+	public static HitboxFrame instanceOf(Frame frame, Function<Name, ReadOnlyBinding<HitboxMedia>> mediaBindingSupplier)
 	{
 		String picture = frame.getPicture();
 		String[] splitPicture = picture.split(Character.toString(DELIMITER_CHARACTER));
@@ -65,7 +66,7 @@ public abstract class HitboxFrame extends Frame
 			throw new HitboxFrameParseException("HitboxFrame class '" + frameClassName + "' not found.", e);
 		}
 
-		String mediaName = splitPicture[2];
+		Name mediaName = new Name(splitPicture[2]);
 		ReadOnlyBinding<HitboxMedia> media = mediaBindingSupplier.apply(mediaName);
 
 		try
@@ -126,6 +127,9 @@ public abstract class HitboxFrame extends Frame
 	@Override
 	public BufferedImage getBufferImage()
 	{
+		if(!liveStreamDataBinding.get().exists())
+			return createMissingImage();
+
 		if(!liveStreamDataBinding.get().isLoaded())
 			return createLoadingImage();
 

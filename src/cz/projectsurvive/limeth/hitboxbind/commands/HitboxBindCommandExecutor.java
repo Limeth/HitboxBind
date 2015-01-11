@@ -75,7 +75,7 @@ public class HitboxBindCommandExecutor implements CommandExecutor
 			if(permissionBlock(sender, PERMISSION_NEW_PREFIX + rawType.toLowerCase()))
 				return true;
 
-			String media = args[2];
+			Name media = new Name(args[2]);
 			Player player = (Player) sender;
 			FrameAction action = new CreateAction(media, frameClass.get());
 

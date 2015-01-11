@@ -10,5 +10,6 @@
     <orderEntry type="library" exported="" name="1.8-based-1.7.10" level="project" />
     <orderEntry type="library" exported="" name="FramePicture-1.8" level="project" />
     <orderEntry type="library" exported="" name="com.google.code.gson:gson:2.3" level="project" />
+    <orderEntry type="module" module-name="Fanciful" />
   </component>
 </module>

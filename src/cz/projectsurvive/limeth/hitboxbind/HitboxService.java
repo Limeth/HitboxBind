@@ -1,5 +1,6 @@
 package cz.projectsurvive.limeth.hitboxbind;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import cz.projectsurvive.limeth.hitboxbind.util.Binding;
 import cz.projectsurvive.limeth.hitboxbind.util.ReadOnlyBinding;
@@ -11,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,31 +21,39 @@ import java.util.Map;
 public class HitboxService
 {
 	private static final int                            LOOP_PERIOD_TICKS = 20 * 60;
-	private final HashMap<String, Binding<HitboxMedia>> dataMap           = Maps.newHashMap();
+	private final HashMap<Name, Binding<HitboxMedia>>   dataMap           = Maps.newHashMap();
 	private final Object                                LOCK              = new Object();
 
-	public ReadOnlyBinding<HitboxMedia> registerMedia(String name)
+	public ReadOnlyBinding<HitboxMedia> registerMedia(Name name, boolean asyncUpdate)
 	{
+		Preconditions.checkNotNull(name, "The media name must not be null!");
 		ReadOnlyBinding<HitboxMedia> media = getMedia(name);
 
 		if(media != null)
 			return media;
 
 		Binding<HitboxMedia> binding = Binding.of(new HitboxMedia(name));
-		MediaUpdateRunnable updateRunnable = new MediaUpdateRunnable(name, binding);
 
 		synchronized(LOCK)
 		{
 			dataMap.put(name, binding);
 		}
 
-		updateRunnable.runTaskAsynchronously(HitboxBind.getInstance());
+		if(asyncUpdate)
+			updateMedia(name);
 
 		return binding;
 	}
 
-	public ReadOnlyBinding<HitboxMedia> getMedia(String name)
+	public ReadOnlyBinding<HitboxMedia> registerMediaAndUpdate(Name name)
 	{
+		Preconditions.checkNotNull(name, "The media name must not be null!");
+		return registerMedia(name, true);
+	}
+
+	public ReadOnlyBinding<HitboxMedia> getMedia(Name name)
+	{
+		Preconditions.checkNotNull(name, "The media name must not be null!");
 		synchronized(LOCK)
 		{
 			return dataMap.containsKey(name) ? dataMap.get(name).readOnly() : null;
@@ -59,6 +67,19 @@ public class HitboxService
 		scheduler.scheduleSyncRepeatingTask(HitboxBind.getInstance(), this::loopTickRunnable, 0, LOOP_PERIOD_TICKS);
 
 		return this;
+	}
+
+	public void updateMedia(Name name)
+	{
+		Preconditions.checkNotNull(name, "The media name must not be null!");
+		Binding<HitboxMedia> binding;
+
+		synchronized(LOCK)
+		{
+			binding = dataMap.get(name);
+		}
+
+		new MediaUpdateRunnable(name, binding).runTaskAsynchronously(HitboxBind.getInstance());
 	}
 
 	private void loopTickRunnable()
@@ -80,10 +101,10 @@ public class HitboxService
 
 	private class MediaUpdateRunnable extends BukkitRunnable
 	{
-		private final String               mediaName;
+		private final Name                 mediaName;
 		private final Binding<HitboxMedia> mediaBinding;
 
-		public MediaUpdateRunnable(String mediaName, Binding<HitboxMedia> mediaBinding)
+		public MediaUpdateRunnable(Name mediaName, Binding<HitboxMedia> mediaBinding)
 		{
 			this.mediaName = mediaName;
 			this.mediaBinding = mediaBinding;
@@ -96,21 +117,13 @@ public class HitboxService
 		}
 	}
 
-	private static void reloadMedia(Map.Entry<String, Binding<HitboxMedia>> entry)
+	private static void reloadMedia(Map.Entry<Name, Binding<HitboxMedia>> entry)
 	{
-		try
-		{
-			entry.getValue().set(HitboxMedia.load(entry.getKey()));
-			Bukkit.getScheduler().runTask(HitboxBind.getInstance(), () -> refreshItemFrames(entry.getKey()));
-		}
-		catch(IOException e)
-		{
-			HitboxBind.warn("An error occurred while updating media '" + entry.getKey() + "'.");
-			e.printStackTrace();
-		}
+		entry.getValue().set(HitboxMedia.load(entry.getKey()));
+		Bukkit.getScheduler().runTask(HitboxBind.getInstance(), () -> refreshItemFrames(entry.getKey()));
 	}
 
-	private static void refreshItemFrames(String mediaName)
+	private static void refreshItemFrames(Name mediaName)
 	{
 		HitboxBind.getFramesWithMedia(mediaName).stream().map(Frame.class::cast).forEach(HitboxService::refreshFrame);
 	}

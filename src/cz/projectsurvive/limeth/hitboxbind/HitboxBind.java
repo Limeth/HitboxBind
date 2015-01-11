@@ -150,7 +150,7 @@ public class HitboxBind extends JavaPlugin
 
 				if(HitboxFrame.isReplaceable(frame))
 				{
-					HitboxFrame hitboxFrame = HitboxFrame.instanceOf(frame, hitboxService::registerMedia);
+					HitboxFrame hitboxFrame = HitboxFrame.instanceOf(frame, hitboxService::registerMediaAndUpdate);
 
 					hitboxFrame.setEntity(frame.getEntity());
 					frameManager.sendFrame(frame);
@@ -175,7 +175,7 @@ public class HitboxBind extends JavaPlugin
 
 	private static void sendConsoleMessage(String string)
 	{
-		Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_PURPLE + "[HitboxBind] " + string);
+		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[HitboxBind] " + string);
 	}
 
 	public static void info(String string)
@@ -288,7 +288,7 @@ public class HitboxBind extends JavaPlugin
 	 * @param mediaName The name of the media (eg. if the stream URL is {@code http://hitbox.tv/Limeth}, then the media name is {@code Limeth}.
 	 * @return A list of all item frames displaying information about this media
 	 */
-	public static List<? super HitboxFrame> getFramesWithMedia(String mediaName)
+	public static List<? super HitboxFrame> getFramesWithMedia(Name mediaName)
 	{
 		return FramePicturePlugin.getManager().getFrames().stream().filter(
 				frame -> frame instanceof HitboxFrame && ((HitboxFrame) frame).getMedia().getUsername().equals(mediaName)

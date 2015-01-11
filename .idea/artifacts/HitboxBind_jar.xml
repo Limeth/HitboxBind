@@ -4,6 +4,7 @@
     <root id="archive" name="HitboxBind.jar">
       <element id="module-output" name="HitboxBind" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/gson-2.3.jar" path-in-jar="/" />
+      <element id="module-output" name="Fanciful" />
     </root>
   </artifact>
 </component>

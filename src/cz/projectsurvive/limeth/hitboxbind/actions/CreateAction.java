@@ -2,6 +2,8 @@ package cz.projectsurvive.limeth.hitboxbind.actions;
 
 import cz.projectsurvive.limeth.hitboxbind.HitboxBind;
 import cz.projectsurvive.limeth.hitboxbind.HitboxMedia;
+import cz.projectsurvive.limeth.hitboxbind.HitboxService;
+import cz.projectsurvive.limeth.hitboxbind.Name;
 import cz.projectsurvive.limeth.hitboxbind.frames.HitboxFrame;
 import cz.projectsurvive.limeth.hitboxbind.util.ReadOnlyBinding;
 import de.howaner.FramePicture.FrameManager;
@@ -15,10 +17,10 @@ import org.bukkit.entity.Player;
  */
 public class CreateAction implements FrameAction
 {
-	private final String                       mediaName;
+	private final Name                         mediaName;
 	private final Class<? extends HitboxFrame> frameClass;
 
-	public CreateAction(String mediaName, Class<? extends HitboxFrame> frameClass)
+	public CreateAction(Name mediaName, Class<? extends HitboxFrame> frameClass)
 	{
 		this.mediaName = mediaName;
 		this.frameClass = frameClass;
@@ -29,16 +31,18 @@ public class CreateAction implements FrameAction
 	{
 		FrameManager manager = FramePicturePlugin.getManager();
 		int id = manager.getNewFrameID();
-		ReadOnlyBinding<HitboxMedia> media = HitboxBind.getHitboxService().registerMedia(mediaName);
+		ReadOnlyBinding<HitboxMedia> media = HitboxBind.getHitboxService().registerMedia(mediaName, false);
 		HitboxFrame frame = HitboxFrame.construct(frameClass, id, media, itemFrame.getLocation(), itemFrame.getFacing());
+		HitboxService service = HitboxBind.getHitboxService();
 
 		frame.setEntity(itemFrame);
 		HitboxBind.registerFrame(frame);
 		manager.sendFrame(frame);
+		service.updateMedia(mediaName);
 		player.sendMessage(ChatColor.GREEN + "Item frame successfully edited.");
 	}
 
-	public String getMediaName()
+	public Name getMediaName()
 	{
 		return mediaName;
 	}

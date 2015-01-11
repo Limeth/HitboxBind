@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$USER_HOME$/Desktop/Coding/Java/Projects/Minecraft/Libraries/fanciful-master/src/main/Fanciful.iml" filepath="$USER_HOME$/Desktop/Coding/Java/Projects/Minecraft/Libraries/fanciful-master/src/main/Fanciful.iml" />
       <module fileurl="file://$PROJECT_DIR$/HitboxBind.iml" filepath="$PROJECT_DIR$/HitboxBind.iml" />
     </modules>
   </component>

@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,32 +29,53 @@ public class HitboxMedia
 	private static final String CHANNEL_LINK = "channel_link";
 	private static final String HOSTNAME_STATIC = "http://edge.sf.hitbox.tv/";
 	private JsonObject root;
-	private String username;
+	private Name username;
+	private boolean exists;
 
 	private HitboxMedia(JsonObject root)
 	{
 		this.root = root;
+		this.exists = true;
 	}
 
-	HitboxMedia(String username)
+	private HitboxMedia(Name username, boolean exists)
 	{
 		this.username = username;
+		this.exists = exists;
 	}
 
-	public static HitboxMedia load(String username) throws IOException
+	HitboxMedia(Name username)
 	{
-		URL url = new URL("http://api.hitbox.tv/media/live/" + username);
-		URLConnection connection = url.openConnection();
-		JsonParser parser = new JsonParser();
-		JsonReader reader = new JsonReader(new InputStreamReader(connection.getInputStream()));
-		JsonObject root = parser.parse(reader).getAsJsonObject();
-
-		return new HitboxMedia(root.get("livestream").getAsJsonArray().iterator().next().getAsJsonObject());
+		this(username, true);
 	}
 
-	public String getUsername()
+	public static HitboxMedia load(Name username)
 	{
-		return root != null ? root.get(MEDIA_USER_NAME).getAsString() : username;
+		try
+		{
+			URL url = new URL("http://api.hitbox.tv/media/live/" + username);
+			URLConnection connection = url.openConnection();
+			JsonParser parser = new JsonParser();
+			JsonReader reader = new JsonReader(new InputStreamReader(connection.getInputStream()));
+			JsonObject root = parser.parse(reader).getAsJsonObject();
+
+			return new HitboxMedia(root.get("livestream").getAsJsonArray().iterator().next().getAsJsonObject());
+		}
+		catch(Exception e)
+		{
+			HitboxBind.warn("Could not load media '" + username + "': " + e.getLocalizedMessage());
+			return new HitboxMedia(username, false);
+		}
+	}
+
+	public Name getUsername()
+	{
+		return root != null ? new Name(root.get(MEDIA_USER_NAME).getAsString()) : username;
+	}
+
+	public boolean exists()
+	{
+		return exists;
 	}
 
 	public String getDisplayName()
@@ -157,6 +177,6 @@ public class HitboxMedia
 
 	public boolean isLoaded()
 	{
-		return root != null;
+		return root != null && exists;
 	}
 }

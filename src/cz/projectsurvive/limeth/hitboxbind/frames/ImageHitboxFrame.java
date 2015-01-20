@@ -12,13 +12,18 @@ import org.bukkit.block.BlockFace;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * @author Limeth
  */
 public abstract class ImageHitboxFrame extends HitboxFrame
 {
+	private static final int TIMEOUT_CONNECT = 5 * 1000;
+	private static final int TIMEOUT_READ = 5 * 1000;
+
 	public ImageHitboxFrame(int id, Class<? extends HitboxFrame> frameClass, ReadOnlyBinding<HitboxMedia> liveStreamDataBinding, Location loc, BlockFace face)
 	{
 		super(id, frameClass, liveStreamDataBinding, loc, face);
@@ -31,11 +36,17 @@ public abstract class ImageHitboxFrame extends HitboxFrame
 	public BufferedImage createImage()
 	{
 		URL url = getImageURL();
-		BufferedImage image = null;
+		BufferedImage image;
 
 		try
 		{
-			image = ImageIO.read(url);
+			URLConnection connection = url.openConnection();
+
+			connection.setConnectTimeout(TIMEOUT_CONNECT);
+			connection.setReadTimeout(TIMEOUT_READ);
+
+			InputStream is = connection.getInputStream();
+			image = ImageIO.read(is);
 
 			Preconditions.checkNotNull(image);
 		}
